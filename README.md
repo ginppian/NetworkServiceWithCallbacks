@@ -307,7 +307,7 @@ Posterior a eso, sólo queda llenar nuestros modelos.
 
 ### 2. Comprendiendo los Completions Handlers
 
-Nota: 
+##### Nota 1: 
 
 El completion se ejecuta hasta que lo llamamos dentro de la función
 
@@ -327,16 +327,16 @@ En el ejemplo anterior se ejecutara un completion diferente en base al arg0.
 
 Al implementarlo:
 
-```swift
+```
 example(true) { ( description, diccionario) in
 	print(descripcion)
 	print(diccionario ?? "diccionario nulo :(")
 }
 ```
 
-nos respondera:
+se verá en consola:
 
-```swift
+```
 true
 {
 key = value;
@@ -344,7 +344,7 @@ key = value;
 ```
 si lo implementamos con false, nos respondera:
 
-```swift
+```
 false
 diccionario nulo :(
 ```
@@ -353,14 +353,16 @@ Podemos tener la funcion example en otra clase en una capa superior y funcionar�
 
 Y así podemos anidar multiples completion.
 
-r = Request() // Capa ViewController.
-r -> httpPost // Capa Request. Construye el request y lo manda a Submit.
-httpPost -> submit() -> // Capa Submit. Manda la petición. 
-httpPost -> submit() <- // Capa Submit. Trae una respuesta.
-httpPost <- Submite // Capa Submit regresa a la capa Request con el completion(ERROR, JSON).
-r <- httpPost // Capa Request regresa a la capa ViewController con el completion(ERROR, JSON).
+##### Lógica del consumo de servicios:
 
-Nota 2:
+r = Request() // Capa ViewController.<br>
+r -> httpPost // Capa Request. Construye el request y lo manda a Submit.<br>
+httpPost -> submit() -> // Capa Submit. Manda la petición.<br>
+httpPost -> submit() <- // Capa Submit. Trae una respuesta.<br>
+httpPost <- Submite // Capa Submit regresa a la capa Request con el completion(ERROR, JSON).<br>
+r <- httpPost // Capa Request regresa a la capa ViewController con el completion(ERROR, JSON).<br>
+
+##### Nota 2:
 
 Nuestros completion regresan Void.
 
@@ -394,9 +396,9 @@ example(true) { ( description_oCualquierNombre, diccionario) -> (string )in
 }
 ```
 
-se imprime:
+se verá en consola:
 
-```swift
+```
 true
 {
 key = value;
@@ -418,7 +420,7 @@ func example(arg0: Bool,
 }
 ```
 
-y ahora se verá imprimirá:
+y ahora se verá en consola:
 
 ```swift
 true
