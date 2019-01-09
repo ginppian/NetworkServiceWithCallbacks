@@ -305,6 +305,132 @@ Así nos responde:
 
 Posterior a eso, sólo queda llenar nuestros modelos.
 
+### 2. Comprendiendo los Completions Handlers
+
+Nota: 
+
+El completion se ejecuta hasta que lo llamamos dentro de la función
+
+```swift
+func example(arg0: Bool, 
+		completion: (_ arg1: String, _ arg2: NSDictionary?) -> Void) {
+		
+		if arg0 == true {
+			completion("true", ["key": "value"])
+		} else {
+			completion("false", nil)
+		}
+}
+```
+
+En el ejemplo anterior se ejecutara un completion diferente en base al arg0.
+
+Al implementarlo:
+
+```swift
+example(true) { ( description, diccionario) in
+	print(descripcion)
+	print(diccionario ?? "diccionario nulo :(")
+}
+```
+
+nos respondera:
+
+```swift
+true
+{
+key = value;
+}
+```
+si lo implementamos con false, nos respondera:
+
+```swift
+false
+diccionario nulo :(
+```
+
+Podemos tener la funcion example en otra clase en una capa superior y funcionará sin ningún problema.
+
+Y así podemos anidar multiples completion.
+
+r = Request() // Capa ViewController.
+r -> httpPost // Capa Request. Construye el request y lo manda a Submit.
+httpPost -> submit() -> // Capa Submit. Manda la petición. 
+httpPost -> submit() <- // Capa Submit. Trae una respuesta.
+httpPost <- Submite // Capa Submit regresa a la capa Request con el completion(ERROR, JSON).
+r <- httpPost // Capa Request regresa a la capa ViewController con el completion(ERROR, JSON).
+
+Nota 2:
+
+Nuestros completion regresan Void.
+
+En caso de que regresaran algún tipo de dato (String o Int), lo que tenemos que hacer es un return y regresará por la función de donde vino.
+
+Por ejemplo:
+
+```swift
+func example(arg0: Bool, 
+		completion: (_ arg1: String, _ arg2: NSDictionary?) -> String) {
+		
+		if arg0 == true {
+			let s = completion("true", ["key": "value"])
+		} else {
+			let s = completion("false", nil)
+		}
+		print(s)
+}
+```
+
+al implementar:
+
+```swift
+example(true) { ( description_oCualquierNombre, diccionario) -> (string )in 
+	print(description_oCualquierNombre)
+	print(diccionario ?? "diccionario nulo :(")
+	// Usamos description_oCualquierNombre y diccionario como quieramos
+	// Como dice description_oCualquierNombre, Podemos nombrarlo como quieramos
+	// Regresamos un String
+	return "\ngracias!!"
+}
+```
+
+se imprime:
+
+```swift
+true
+{
+key = value;
+}
+```
+
+regresamos a la función que invocamos:
+
+```swift
+func example(arg0: Bool, 
+		completion: (_ arg1: String, _ arg2: NSDictionary?) -> String) {
+		
+		if arg0 == true {
+			let s = completion("true", ["key": "value"])
+		} else {
+			let s = completion("false", nil)
+		}
+		print(s)
+}
+```
+
+y ahora se verá imprimirá:
+
+```swift
+true
+{
+key = value;
+}
+
+gracias!!
+```
+
+y terminan los callbacks!!
+
 ### Fuentes
 
 * <a href="https://stackoverflow.com/questions/30401439/how-could-i-create-a-function-with-a-completion-handler-in-swift">How could I create a function with a completion handler in Swift?
