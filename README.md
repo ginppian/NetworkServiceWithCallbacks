@@ -1,11 +1,15 @@
 Consumo De Servicios Con Callbacks Swift
 ===
 
+<p align="center">
+	<img src="imgs/img1.png" height="" width="">
+</p>
+
 ### 1. Desarrollo
 
 ##### 1.1 Utilidades
 
-Primero necesitamos un par de utilidades. Creamos la classe <i>DGHttpMethods</i>:
+Primero necesitamos un par de herramientas. Creamos la classe <i>DGHttpMethods</i>:
 
 Los métodos de http para consumo de servicios.
 
@@ -22,8 +26,7 @@ public class DGHttpMethods: NSObject {
 
 Así también creamos la clase <i>DGUtilities</i>:
 
-Un tiempo de espera máximo para que responda el servicio.
-Cabeceras básicas para un consumo de servicios REST.
+Un tiempo de espera máximo en segundos, para que responda el servicio. Y cabeceras básicas para un consumo de servicios REST.
 
 ```swift
 public class DGUtilities: NSObject {
@@ -39,7 +42,7 @@ public class DGUtilities: NSObject {
 }
 ```
 
-Y por último creamos un Singleton para reusar la instancía de cadena vacía.
+Por último creamos un Singleton para reusar la instancía de cadena vacía.
 
 ```swift
 class DGString {
@@ -57,7 +60,7 @@ class DGString {
 
 ##### 1.2 Construcción de las capas Request y Submit.
 
-Request es el objeto que contiene nuestra petición, que método, que cabeceras, que cuerpo, cual url, etc.
+Request es el objeto que contiene nuestra petición. Contiene que método http usaremos, que cabeceras, que cuerpo, cual url, etc.
 
 Y Submit es la capa superior que envia el Request, a través de librerías nativas.
 
@@ -137,11 +140,11 @@ class Request: Submit {
 }
 ```
 
-Podemos observar 3 funciones. <i>httpPost</i> y <i>httpGet</i> las cuales obtienen como parametros una URL como cadena, cabeceras extra a parte de las básicas que nos otros le agregamos por defecto, por si lo llegan a necesitar, un <i>body</i> si es una petición <i>post</i> y por último vemos un <i>completion</i> el cual será de utilidad para alguien que invoqué la función pues le regresará (dentro de la misma función) un error en caso de que exista y un json que será la respuesta del servicio solicitado. 
+Podemos observar 3 funciones. Para las dos primeras, <i>httpPost</i> y <i>httpGet</i> obtienen como parametros una URL como string, cabeceras extra a parte de las básicas (que nos otros le agregamos por defecto por si lo llegan a necesitar), un <i>body</i> si es una petición <i>post</i> y por último vemos un <i>completion</i> el cual será de utilidad para alguien que invoqué la función, pues regresará la respuesta dentro de la misma función. Dentro del completion, un error en caso de que exista y un json que será la respuesta del servicio solicitado. 
 
-En la implementación vemos que se auxilia de una funcion <i>buildRequest</i> para construir el request, y posterior a eso invoca a otra función <i>submit</i> la cual la obtiene heredando, y es de la que obtiene la respuesta del submite y le pasa a su propio completion esa respuesta, un error en caso de que exista y un json, mismos que seran usados en una capa inferior por el usuario.
+En la implementación vemos que se auxilia de una funcion <i>buildRequest</i> para construir el request, y posterior a eso invoca a otra función <i>submit</i> la cual la obtiene heredando. La función submite tiene su propio completion que contiene un error en caso de que exista y un json, mismos que seran usados en una capa inferior por el usuario.
 
-Por último la función <i>buildRequest</i> crea un objeto url a partir del string que le pasamos, un request vacio que complementa con un body en caso de que el método sea POST, asigna el método, el tiempo de respuesta, las cabeceras por defecto, en caso de contener cabeceras extra se las agrega y regresa el request.
+Por último para la tercer la función <i>buildRequest</i>, construye un rquest, de diversos componentes, el primero una url a partir del string que le pasamos, un request vacio que complementa con un body en caso de que el método sea POST, también asigna el método http que usará, el tiempo de respuesta máximo, las cabeceras por defecto, en caso de contener cabeceras extra se las agrega y regresa el request construido.
 
 ##### 1.2.2 Submit
 
@@ -215,7 +218,23 @@ class Submit: NSObject {
 }
 ```
 
-Se crea una variable <i>session</i> y un <i>dataTask</i> la variable sesssion se inicializa al crear una instalacía de la clase submite y posterior a eso se debe ejecutar la función submite pasandole como parametro el request previamente creado. En base a estos componentes la variable dataTask, ejecutará el servicio (resume) y dentro de la misma función nos dara la respuesta (error, data, response). Al obtener la respuesta checamos que no traiga ningun error (que sea nil). Posterior a eso checamos el response (casteamos a httpResponse) y checamos que se encuentre en el rango de respuestas válido para http que es del 200 ... 299. Si todo va bien ahora sí checamos la data que no sea nil. Una vez superado esto (como es consumo de servicios REST esperamos un JSON o un array de JSONs) intentamos hacer el cast a array, si es así lo envolvemos en un JSON y se lo pasamos a nuestro completion que usara una clase más abajo. Sino se puede hacer el cast a array, lo intentamos hacer a un diccionario que es la estructura de datos que usamos en Swift para manejar los Json y se lo pasamos al completion. Si ninguna de las anteriores se puede regresamos un error en el completion.
+Se crea una variable <i>session</i> y un <i>dataTask</i> la variable sesssion se inicializa al crear una instalacía de la clase submite.<br>
+
+Posterior a eso se debe ejecutar la función submite pasandole como parametro el request previamente creado.<br>
+
+En base a estos componentes la variable dataTask, se ejecutará (task.resume()) y dentro de la misma función nos dara la respuesta (error, data, response).<br>
+
+Al obtener la respuesta checamos que no traiga ningun error (que sea nil). 
+
+Posterior a eso checamos el response (casteamos a httpResponse) y checamos que se encuentre en el rango de respuestas válido para http que es del 200 ... 299.<br>
+
+Si todo va bien, ahora sí, checamos la data que no sea nil.<br>
+
+Una vez superado todo esto ... hacemos el cast del data, (como es consumo de servicios REST esperamos un JSON, a veces viene como un Array que contiene varios objetos JSON) si es así, intentamos hacer el cast a Array. Si efectivamente viene como Array, lo envolvemos en un <i>NSDictionary</i> para crear un JSON por nos otros mismos, pues el <i>completion</i> espera un JSON, y se lo pasamos al completion (que usara una clase más abajo).<br>
+
+Sino no se puede hacer el cast a array, ahora lo intentamos hacer a un diccionario (NSDictionary) que es la estructura de datos que usamos en Swift para manejar los JSON y se lo pasamos al completion.<br>
+
+Si ninguna de las anteriores se puede, regresamos un error al intentar castear a JSON, pasandoselo al completion.<br>
 
 ##### 1.3 Consumo
 
@@ -231,18 +250,18 @@ URL:
 Headers:
 	key: Content-Type, value: application/json
 Body:
-	 { 
-	   "title": "foo",
+	{ 
+	  "title": "foo",
       "body": "bar",
       "userId": 1
     }
 Respuesta:
-	{
+{
     "title": "foo",
     "body": "bar",
     "userId": 1,
     "id": 101
-	}
+}
 ```
 ViewController:
 
@@ -278,6 +297,13 @@ class ViewController: UIViewController {
 
 ```
 Posterior a eso, sólo queda llenar nuestros modelos.
+
+Así nos responde:
+
+<p align="center">
+	<img src="imgs/img1.png" height="" width="">
+</p>
+
 
 ### Fuentes
 
