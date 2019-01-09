@@ -366,74 +366,111 @@ r <- httpPost // Capa Request regresa a la capa ViewController con el completion
 
 ##### Nota 2:
 
-Nuestros completion regresan Void.
+Nuestros completion regresan Void.<br>
 
-En caso de que regresaran algún tipo de dato (String o Int), lo que tenemos que hacer es un return y regresará por la función de donde vino.
+En caso de que regresaran algún tipo de dato (String o Int), lo que tenemos que hacer es un return y regresará por la función de donde vino.<br>
 
-Por ejemplo:
-
-```swift
-func example(arg0: Bool, 
-		completion: (_ arg1: String, _ arg2: NSDictionary?) -> String) {
-		
-		if arg0 == true {
-			let s = completion("true", ["key": "value"])
-		} else {
-			let s = completion("false", nil)
-		}
-		print(s)
-}
-```
-
-al implementar:
+Por ejemplo:<br>
 
 ```swift
-example(true) { ( description_oCualquierNombre, diccionario) -> (string )in 
-	print(description_oCualquierNombre)
-	print(diccionario ?? "diccionario nulo :(")
-	// Usamos description_oCualquierNombre y diccionario como quieramos
-	// Como dice description_oCualquierNombre, Podemos nombrarlo como quieramos
-	// Regresamos un String
-	return "\ngracias!!"
-}
+    func example(arg0: Bool,
+                 completion: (_ arg1: String, _ arg2: NSDictionary?) -> String) -> Int {
+        
+        if arg0 == true {
+            let s = completion("true", ["key": "value"])
+            print(s)
+        } else {
+            let s = completion("false", nil)
+            print(s)
+        }
+        
+        return 4
+    }
 ```
 
-se verá en consola:
+la llamamos:<br>
+
+```swift
+let n = example(arg0: true) { (cualquierNombre_des, cualquierNombre_json) -> String in
+            print(cualquierNombre_des)
+            print(cualquierNombre_json)
+            // Como dice cualquierNombre_des, o podemos nombrarlo como quieramos
+            // Regresamos un String
+            return "gracias"
+        }
+print("numero: \(n)")
+```
+
+se verá en consola:<br>
 
 ```
 true
-{
-key = value;
-}
+Optional({
+    key = value;
+})
+...
 ```
 
-regresamos a la función que invocamos:
+pero aún no termina...<br>
+regresamos el "gracias" a la función que invocamos:<br>
 
 ```swift
-func example(arg0: Bool, 
-		completion: (_ arg1: String, _ arg2: NSDictionary?) -> String) {
-		
-		if arg0 == true {
-			let s = completion("true", ["key": "value"])
-		} else {
-			let s = completion("false", nil)
-		}
-		print(s)
-}
+    func example(arg0: Bool,
+                 completion: (_ arg1: String, _ arg2: NSDictionary?) -> String) -> Int {
+        
+        if arg0 == true {
+            let s = completion("true", ["key": "value"])
+            print(s)
+        } else {
+            let s = completion("false", nil)
+            print(s)
+        }
+        
+        return 4
+    }
 ```
 
-y ahora se verá en consola:
+y ahora se verá en consola:<br>
 
-```swift
+```
 true
-{
-key = value;
-}
-
-gracias!!
+Optional({
+    key = value;
+})
+gracias
 ```
 
-y terminan los callbacks!!
+pero aún no terminamos...<br>
+regresamos a la invocación<br>
+
+```swift
+let n = example(arg0: true) { (cualquierNombre_des, cualquierNombre_json) -> String in
+            print(cualquierNombre_des)
+            print(cualquierNombre_json)
+            // Como dice cualquierNombre_des, o podemos nombrarlo como quieramos
+            // Regresamos un String
+            return "gracias"
+        }
+print("numero: \(n)")
+```
+
+y por último se verá en consola:<br>
+
+```
+true
+Optional({
+    key = value;
+})
+gracias
+numero: 4
+```
+
+y terminan los callbacks!!<br>
+Es un juego de ir y venir!!
+
+<p align="center">
+	<img src="imgs/img2.png" height="" width="">
+</p>
 
 ### Fuentes
 
