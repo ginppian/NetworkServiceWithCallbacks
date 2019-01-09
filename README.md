@@ -296,7 +296,6 @@ class ViewController: UIViewController {
 }
 
 ```
-Posterior a eso, sólo queda llenar nuestros modelos.
 
 Así nos responde:
 
@@ -304,6 +303,7 @@ Así nos responde:
 	<img src="imgs/img1.png" height="" width="">
 </p>
 
+Posterior a eso, sólo queda llenar nuestros modelos.
 
 ### Fuentes
 
