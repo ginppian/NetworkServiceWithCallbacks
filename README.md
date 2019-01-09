@@ -356,12 +356,12 @@ Y así podemos anidar multiples completion.
 ##### Lógica del consumo de servicios:
 
 ```
-r = Request() // Capa ViewController.<br>
-r -> httpPost // Capa Request. Construye el request y lo manda a Submit.<br>
-httpPost -> submit() -> // Capa Submit. Manda la petición.<br>
-httpPost -> submit() <- // Capa Submit. Trae una respuesta.<br>
-httpPost <- Submite // Capa Submit regresa a la capa Request con el completion(ERROR, JSON).<br>
-r <- httpPost // Capa Request regresa a la capa ViewController con el completion(ERROR, JSON).<br>
+r = Request() // Capa ViewController.
+r -> httpPost // Capa Request. Construye el request y lo manda a Submit.
+httpPost -> submit() -> // Capa Submit. Manda la petición.
+httpPost -> submit() <- // Capa Submit. Trae una respuesta.
+httpPost <- Submite // Capa Submit regresa a la capa Request con el completion(ERROR, JSON).
+r <- httpPost // Capa Request regresa a la capa ViewController con el completion(ERROR, JSON).
 ```
 
 ##### Nota 2:
